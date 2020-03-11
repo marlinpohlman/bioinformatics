@@ -58,7 +58,7 @@ def main():
         else:
             Flag = True
 
-#    print("debug1:"," Pattern=", Pattern, " Text=", Text, "PatternCount=", str(PatternCount(Pattern, Text)) )     
+    file.close()
     print(ReverseComplement(Pattern))
     return ReverseComplement(Pattern)
 #   

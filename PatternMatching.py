@@ -22,7 +22,7 @@ def main():
         args.infile = None
         args = parser.parse_args()    
 
-    Pattern = str(args.pattern[0])
+    Pattern = str(args.pattern)
     
     valid_DNA = 'ACTGU'
     valid_FileName = 'tx.do'
@@ -49,27 +49,30 @@ def main():
             elif any(i in valid_PathName for i in str(args.RAW_input)) == True:
                 filename = str(args.RAW_input)
                 file = open(filename,'r')
-                Genome = str(file.read())
+                Genome = str(file.read().splitlines())
                 Flag = True
             elif any(i in valid_FileName for i in str(args.RAW_input)) == True:
                 filename = str(args.RAW_input)
                 file = open(filename,'r')
-                Genome = str(file.read())
+                Genome = str(file.read().splitlines())
                 Flag = True
         else:
             Flag = True
 
-#    print("debug1:"," Pattern=", Pattern, " Text=", Text, "PatternCount=", str(PatternCount(Pattern, Text)) )     
+    file.close()
     print(PatternMatching(Pattern, Genome))
     return PatternMatching(Pattern, Genome)
 #   
 # ActualCode from here on  
+
 def PatternMatching(Pattern, Genome):
-    positions = []  # output variable
-    for i in range(len(Genome) - len(Pattern) + 1):
-        if Genome[i:i + len(Pattern)] == Pattern:
-            positions.append(i)
-    return positions
+    list = []
+    for i in range(len(Genome)-len(Pattern)+1):
+        if Genome[i:i+len(Pattern)] == Pattern:
+            list.append(i)
+    return list     
+
+
 
 if __name__ == '__main__':
     main() 

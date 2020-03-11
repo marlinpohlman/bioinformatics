@@ -58,7 +58,7 @@ def main():
                 Flag = True
         else:
             Flag = True
-                
+        file.close()
 #   ActalCode from here on 
 
     def FrequentWords(Text, k):
