@@ -9,7 +9,6 @@ if init_length >= 3:
 @Gooey(program_name='Frequent Words', program_description='Frequency of DNA fragments')
 def main():
 
-
     parser = argparse.ArgumentParser(conflict_handler='resolve')
     parser.add_argument('k', nargs='?', help="k integer",default=int(1) )
     group = parser.add_mutually_exclusive_group()
@@ -22,7 +21,7 @@ def main():
         args.infile = None
         args = parser.parse_args()    
             
-    k = int(args.k[0])
+    k = int(args.k)
 
     valid_DNA = 'ACTGU'
     valid_FileName = 'tx.do'
@@ -58,10 +57,12 @@ def main():
                 Flag = True
         else:
             Flag = True
-        file.close()
+#        file.close()
+    print(FrequentWords(Text,k))
+    return FrequentWords(Text,k)
 #   ActalCode from here on 
 
-    def FrequentWords(Text, k):
+def FrequentWords(Text, k):
         FrequentPatterns = [] # output variable
         # your code here
         Count = CountDict(Text, k)
@@ -72,14 +73,14 @@ def main():
         FrequentPatternsNoDuplicates = remove_duplicates(FrequentPatterns)
         return FrequentPatternsNoDuplicates
     
-    def remove_duplicates(Text):
+def remove_duplicates(Text):
         ItemsNoDuplicates = []
         for item in Text:
             if item not in ItemsNoDuplicates:
                 ItemsNoDuplicates.append(item)
         return ItemsNoDuplicates
     
-    def CountDict(Text, k):
+def CountDict(Text, k):
         Count = {} # output variable
         # your code here
         for i in range((len(Text))-k+1):
@@ -87,15 +88,15 @@ def main():
             Count[i] = PatternCount(Pattern, Text)
         return Count
     
-    def PatternCount(Pattern, Text):
+def PatternCount(Pattern, Text):
         count = 0 # output variable
         for i in range(len(Text)-len(Pattern)+1):
             if Text[i:i+len(Pattern)] == Pattern:
                 count = count+1
         return str(count)
 
-    print(FrequentWords(Text,k))
-    return FrequentWords(Text,k)
+#    print(FrequentWords(Text,k))
+#    return FrequentWords(Text,k)
     
 if __name__ == '__main__':
     main()

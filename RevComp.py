@@ -58,7 +58,7 @@ def main():
         else:
             Flag = True
 
-    file.close()
+#    file.close()
     print(ReverseComplement(Pattern))
     return ReverseComplement(Pattern)
 #   

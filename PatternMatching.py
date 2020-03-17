@@ -59,7 +59,7 @@ def main():
         else:
             Flag = True
 
-    file.close()
+#    file.close()
     print(PatternMatching(Pattern, Genome))
     return PatternMatching(Pattern, Genome)
 #   
