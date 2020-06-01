@@ -1,108 +1,171 @@
+import math
+import sys, argparse
+from gooey import Gooey, GooeyParser
 
+CL_Flag = False  
+init_length = len(sys.argv)
+if init_length >= 2:
+    if not '--ignore-gooey' in sys.argv:
+        sys.argv.append('--ignore-gooey')
+        CL_Flag = True
+else:
+    CL_Flag = False 
+
+@Gooey(program_name="entropy of the NF-κB motif matrix", program_description='entropy of the NF-κB motif matrix(A,C,G,T)
 def main():
 
-    Dna = ["GGCGTTCAGGCA','AAGAATCAGTCA','CAAGGAGTTCGC','CACGTCAATCAC','CAATAATATTCG"]   
-    k = 3
-    t = 5
-                
-    print(GreedyMotifSearch(Dna, k, t))
-    return GreedyMotifSearch(Dna, k, t)
+    if CL_Flag == False:
+        parser = GooeyParser(conflict_handler='resolve', description="A file in dict form or raw")       
+        parser.add_argument('a', type=str, nargs='1', help='(A) filename or [#,#,#,#]' , widget="FileChooser")              
+        parser.add_argument('c', type=str, nargs='1', help='(C) filename or [#,#,#,#]' , widget="FileChooser")  
+        parser.add_argument('g', type=str, nargs='1', help='(G) filename or [#,#,#,#]' , widget="FileChooser")  
+        parser.add_argument('t', type=str, nargs='1', help='(T) filename or [#,#,#,#]' , widget="FileChooser")          
+    if CL_Flag == True:
+        parser = argparse.ArgumentParser(conflict_handler='resolve')              
+        parser.add_argument('a', type=str, nargs='1', help="(A) filename or [#,#,#,#]" )
+        parser.add_argument('c', type=str, nargs='1', help="(C) filename or [#,#,#,#]" )
+        parser.add_argument('g', type=str, nargs='1', help="(G) filename or [#,#,#,#]" )
+        parser.add_argument('t', type=str, nargs='1', help="(T) filename or [#,#,#,#]" )
 
-#   
-# ActualCode from here onhttps://stepik.org/lesson/23066/step/5?unit=6799
-#
+    args = parser.parse_args()
+    print("Debug: a:",args.a," c:",args.c," g:",args.g," t:", args.t)
+    Flag_1 = False
+    while Flag_1 == False:
+        if args.a != None: 
+             s1 = args.a
+             if validSequence(s1) == True:
+                 a = str(args.a[0])
+                 Flag_1 = True
+             if validFileName(args.a[0]) == True:
+                 filename = str(args.a[0])                 
+                 file = open(filename, "r")
+                 a = file.read()
+                 Flag_1 = True
+             else:
+                 print("input error a")
+                 a = 0
+                 Flag_1 = True
+                 
+    # Clean it up if its alredy in data dictionary format
+    a = a.replace("{[","[")
+    a = a.replace("]}","]")
+    a = a.replace("[\"[\'","[\'")
+    a = a.replace("\']\"]","\']")
+    a = a.replace("\',\",","\',")
+    a = a.replace("\"\'","\'")
+    
+    Flag_1 = False
+    while Flag_1 == False:
+        if args.c != None: 
+             s1 = args.c
+             if validSequence(s1) == True:
+                 c = str(args.c[0])
+                 Flag_1 = True
+             if validFileName(args.c[0]) == True:
+                 filename = str(args.c[0])                 
+                 file = open(filename, "r")
+                 c = file.read()
+                 Flag_1 = True
+             else:
+                 print("input error c")
+                 c = 0
+                 Flag_1 = True
+                 
+    # Clean it up if its alredy in data dictionary format
+    c = c.replace("{[","[")
+    c = c.replace("]}","]")
+    c = c.replace("[\"[\'","[\'")
+    c = c.replace("\']\"]","\']")
+    c = c.replace("\',\",","\',")
+    c = c.replace("\"\'","\'")
+    
+    Flag_1 = False
+    while Flag_1 == False:
+        if args.g != None: 
+             s1 = args.g
+             if validSequence(s1) == True:
+                 g = str(args.g[0])
+                 Flag_1 = True
+             if validFileName(args.g[0]) == True:
+                 filename = str(args.g[0])                 
+                 file = open(filename, "r")
+                 g = file.read()
+                 Flag_1 = True
+             else:
+                 print("input error g")
+                 g = 0
+                 Flag_1 = True
+                 
+    # Clean it up if its alredy in data dictionary format
+    g = g.replace("{[","[")
+    g = g.replace("]}","]")
+    g = g.replace("[\"[\'","[\'")
+    g = g.replace("\']\"]","\']")
+    g = g.replace("\',\",","\',")
+    g = g.replace("\"\'","\'")
+    
+    Flag_1 = False
+    while Flag_1 == False:
+        if args.t != None: 
+             s1 = args.t
+             if validSequence(s1) == True:
+                 t = str(args.t[0])
+                 Flag_1 = True
+             if validFileName(args.t[0]) == True:
+                 filename = str(args.t[0])                 
+                 file = open(filename, "r")
+                 t = file.read()
+                 Flag_1 = True
+             else:
+                 print("input error g")
+                 t = 0
+                 Flag_1 = True
+                 
+    # Clean it up if its alredy in data dictionary format
+    t = t.replace("{[","[")
+    t = t.replace("]}","]")
+    t = t.replace("[\"[\'","[\'")
+    t = t.replace("\']\"]","\']")
+    t = t.replace("\',\",","\',")
+    t = t.replace("\"\'","\'")
+    
+    
 
+    try:
+        print("Entropy Value:", entropy(a,c,g,t))
+        return entropy(a,c,g,t)
+    except:
+        print("error")
+        return 0
 
-def Pr(Text, Profile):
-    p = 1
-    for i in range(len(Text)):
-        p = p * Profile[Text[i]][i]
-    return p
 
 def validSequence(s1):
-    valid = "ACTGU[]\'/'"
-    for letter in s1:
-        if letter not in valid:
-            return False
-    return True
+    valid = '[]'
+    for letter in str(s1):
+        if letter in valid:
+            return True
+    return False
 
-def Count(Motifs):
-    count = {} # initializing the count dictionary
-    k = len(Motifs[0])
-    for symbol in "ACGT":
-        count[symbol] = []
-        for j in range(k):
-            count[symbol].append(0)
+def validFileName(s1):
+    valid = 'C:/.'
+    for letter in str(s1):
+        if letter in valid:
+            return True
+    return False
 
-def Consensus(Motifs):
-    k = len(Motifs[0])
-    count = Count(Motifs)
-    consensus = ""
-    for j in range(k):
-        m = 0
-        frequentSymbol = ""
-        for symbol in "ACGT":
-            if count[symbol][j] > m:
-                m = count[symbol][j]
-                frequentSymbol = symbol
-        consensus += frequentSymbol
-    return consensus
+def entropy(a,c,g,t):
+#    a=[0.2,0.2,0.9,0.1,0.1,0.1,0.3]
+#    c=[0.1,0.6,0.4,0.1,0.2,0.4,0.6]
+#    g=[1,1,0.9,0.9,0.1]
+#    t=[0.7,0.2,0.1,0.1,0.5,0.8,0.7,0.3,0.4]
+    data_list=[a,c,g,t]
 
-def Profile(Motifs):
-    count = {} # initializing the count dictionary
-    profile = {}
-    k = len(Motifs[0])
-    for symbol in "ACGT":
-        count[symbol] = []
-        for j in range(k):
-            count[symbol].append(0)
-
-    t = len(Motifs)
-    for i in range(t):
-        for j in range(k):
-            symbol = Motifs[i][j]
-            count[symbol][j] += 1
-    ## divide the number of motif strings to get frequency
-    for letter in count.keys():
-        profile[letter] = [x/ float(t) for x in count[letter]]
-    return profile
-
-def ProfileMostProbableKmer(Text, k, Profile):
-    p_dict = {}
-    for i in range(len(Text)- k +1):
-        p = Pr(Text[i: i+k], Profile)
-        p_dict[i] = p
-    m = max(p_dict.values())
-    keys = [k for k,v in p_dict.items() if v == m]
-    ind = keys[0]
-    return Text[ind: ind +k]
-
-def Score(Motifs):
-    consensus = Consensus(Motifs)
-    t = len(Motifs)
-    k = len(Motifs[0])
-    score = 0
-    for i in range(k):
-        FrequentSymbol = consensus[i]
-        for j in range(t):
-            if Motifs[j][i] != FrequentSymbol:
-                score = score + 1
-    return score
-
-def GreedyMotifSearch(Dna, k, t):
-    BestMotifs = []
-    for i in range(0, t):
-        BestMotifs.append(Dna[i][0:k])
-    n = len(Dna[0])
-    for i in range(n-k+1):
-        Motifs = []
-        Motifs.append(Dna[0][i:i+k])
-        for j in range(1, t):
-            P = Profile(Motifs[0:j])
-            Motifs.append(ProfileMostProbableKmer(Dna[j], k, P))
-        if Score(Motifs) < Score(BestMotifs):
-            BestMotifs = Motifs
-    return BestMotifs
+    H=0.0
+    for j in data_list:
+        for i in j:
+            H=H+i*(math.log(i,2))
+        
+    return(-H)
 
 if __name__ == '__main__':
-    main()
+    main() 

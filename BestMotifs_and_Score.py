@@ -10,39 +10,40 @@ if init_length >= 2:
 else:
     CL_Flag = False 
 
-@Gooey(program_name="GreedyMotifSearch(Dna, k, t)", program_description='GreedyMotifSearch(Dna, k, t)')
+@Gooey(program_name="BestMotifs and Score", program_description='GreedyMotifSearch(Dna, k, t=len(Dna))')
 def main():
 
     if CL_Flag == False:
         parser = GooeyParser(conflict_handler='resolve', description="Enter DNA or select or type a filename")       
-        parser.add_argument('input0', type=int, nargs='?', help='t') 
         parser.add_argument('input1', type=int, nargs='?', help='K') 
         parser.add_argument('input2', type=str, nargs='*', help='DNA without \' \" or , (s) or FileName of a properly formatted data dictionary' , widget="FileChooser")       
         
         
     if CL_Flag == True:
         parser = argparse.ArgumentParser(conflict_handler='resolve')       
-        parser.add_argument('input0', type=int, nargs='?', help="t" ) 
         parser.add_argument('input1', type=int, nargs='?', help='K')        
         parser.add_argument('input2', type=str, nargs='*', help="DNA file or raw" )
    
     args = parser.parse_args()
-    print("Debug:",args.input0," ",args.input1," ",args.input2)
+    print("Debug:"," k:",args.input1," Dna:",args.input2[0])
 #    valid_File = '/.tx'
     Flag_1 = False
     while Flag_1 == False:
         if args.input2 != None: 
-             s1 = args.input2
+             s1 = args.input2[0]
              if validSequence(s1) == True:
-                 Text = str(args.input2[0])
+                 print("validSequence test passed")
+                 Text = str(args.input2)
                  Flag_1 = True
-             if validFileName(args.input2[0]) == True:
+             elif validFileName(args.input2[0]) == True:
+                 print("validFileName test passed")
                  filename = str(args.input2[0])                 
                  file = open(filename, "r")
                  Text = file.read()
+                 Text = str(Text)
                  Flag_1 = True
              else:
-                 print("input error")
+                 print("Failure - input error")
                  Text = "input error"
                  Flag_1 = True
                  
@@ -53,29 +54,47 @@ def main():
     Text = Text.replace("\']\"]","\']")
     Text = Text.replace("\',\",","\',")
     Text = Text.replace("\"\'","\'")
-    print(Text)
-    Dna = ['GGCGTTCAGGCA', 'AAGAATCAGTCA', 'CAAGGAGTTCGC', 'CACGTCAATCAC', 'CAATAATATTCG']
-    print(Dna)
-    t = int(args.input0)
+#    print(Text)
+#    Dna = [ "GCGCCCCGCCCGGACAGCCATGCGCTAACCCTGGCTTCGATGGCGCCGGCTCAGTTAGGGCCGGAAGTCCCCAATGTGGCAGACCTTTCGCCCCTGGCGGACGAATGACCCCAGTGGCCGGGACTTCAGGCCCTATCGGAGGGCTCCGGCGCGGTGGTCGGATTTGTCTGTGGAGGTTACACCCCAATCGCAAGGATGCATTATGACCAGCGAGCTGAGCCTGGTCGCCACTGGAAAGGGGAGCAACATC",
+#"CCGATCGGCATCACTATCGGTCCTGCGGCCGCCCATAGCGCTATATCCGGCTGGTGAAATCAATTGACAACCTTCGACTTTGAGGTGGCCTACGGCGAGGACAAGCCAGGCAAGCCAGCTGCCTCAACGCGCGCCAGTACGGGTCCATCGACCCGCGGCCCACGGGTCAAACGACCCTAGTGTTCGCTACGACGTGGTCGTACCTTCGGCAGCAGATCAGCAATAGCACCCCGACTCGAGGAGGATCCCG",
+#"ACCGTCGATGTGCCCGGTCGCGCCGCGTCCACCTCGGTCATCGACCCCACGATGAGGACGCCATCGGCCGCGACCAAGCCCCGTGAAACTCTGACGGCGTGCTGGCCGGGCTGCGGCACCTGATCACCTTAGGGCACTTGGGCCACCACAACGGGCCGCCGGTCTCGACAGTGGCCACCACCACACAGGTGACTTCCGGCGGGACGTAAGTCCCTAACGCGTCGTTCCGCACGCGGTTAGCTTTGCTGCC",
+#"GGGTCAGGTATATTTATCGCACACTTGGGCACATGACACACAAGCGCCAGAATCCCGGACCGAACCGAGCACCGTGGGTGGGCAGCCTCCATACAGCGATGACCTGATCGATCATCGGCCAGGGCGCCGGGCTTCCAACCGTGGCCGTCTCAGTACCCAGCCTCATTGACCCTTCGACGCATCCACTGCGCGTAAGTCGGCTCAACCCTTTCAAACCGCTGGATTACCGACCGCAGAAAGGGGGCAGGAC",
+#"GTAGGTCAAACCGGGTGTACATACCCGCTCAATCGCCCAGCACTTCGGGCAGATCACCGGGTTTCCCCGGTATCACCAATACTGCCACCAAACACAGCAGGCGGGAAGGGGCGAAAGTCCCTTATCCGACAATAAAACTTCGCTTGTTCGACGCCCGGTTCACCCGATATGCACGGCGCCCAGCCATTCGTGACCGACGTCCCCAGCCCCAAGGCCGAACGACCCTAGGAGCCACGAGCAATTCACAGCG",
+#"CCGCTGGCGACGCTGTTCGCCGGCAGCGTGCGTGACGACTTCGAGCTGCCCGACTACACCTGGTGACCACCGCCGACGGGCACCTCTCCGCCAGGTAGGCACGGTTTGTCGCCGGCAATGTGACCTTTGGGCGCGGTCTTGAGGACCTTCGGCCCCACCCACGAGGCCGCCGCCGGCCGATCGTATGACGTGCAATGTACGCCATAGGGTGCGTGTTACGGCGATTACCTGAAGGCGGCGGTGGTCCGGA",
+#"GGCCAACTGCACCGCGCTCTTGATGACATCGGTGGTCACCATGGTGTCCGGCATGATCAACCTCCGCTGTTCGATATCACCCCGATCTTTCTGAACGGCGGTTGGCAGACAACAGGGTCAATGGTCCCCAAGTGGATCACCGACGGGCGCGGACAAATGGCCCGCGCTTCGGGGACTTCTGTCCCTAGCCCTGGCCACGATGGGCTGGTCGGATCAAAGGCATCCGTTTCCATCGATTAGGAGGCATCAA",
+#"GTACATGTCCAGAGCGAGCCTCAGCTTCTGCGCAGCGACGGAAACTGCCACACTCAAAGCCTACTGGGCGCACGTGTGGCAACGAGTCGATCCACACGAAATGCCGCCGTTGGGCCGCGGACTAGCCGAATTTTCCGGGTGGTGACACAGCCCACATTTGGCATGGGACTTTCGGCCCTGTCCGCGTCCGTGTCGGCCAGACAAGCTTTGGGCATTGGCCACAATCGGGCCACAATCGAAAGCCGAGCAG",
+#"GGCAGCTGTCGGCAACTGTAAGCCATTTCTGGGACTTTGCTGTGAAAAGCTGGGCGATGGTTGTGGACCTGGACGAGCCACCCGTGCGATAGGTGAGATTCATTCTCGCCCTGACGGGTTGCGTCTGTCATCGGTCGATAAGGACTAACGGCCCTCAGGTGGGGACCAACGCCCCTGGGAGATAGCGGTCCCCGCCAGTAACGTACCGCTGAACCGACGGGATGTATCCGCCCCAGCGAAGGAGACGGCG",
+#"TCAGCACCATGACCGCCTGGCCACCAATCGCCCGTAACAAGCGGGACGTCCGCGACGACGCGTGCGCTAGCGCCGTGGCGGTGACAACGACCAGATATGGTCCGAGCACGCGGGCGAACCTCGTGTTCTGGCCTCGGCCAGTTGTGTAGAGCTCATCGCTGTCATCGAGCGATATCCGACCACTGATCCAAGTCGGGGGCTCTGGGGACCGAAGTCCCCGGGCTCGGAGCTATCGGACCTCACGATCACC"]
+    try:
+        Dna = eval(Text)
+    except:
+        print("Eval Failed using Text ",Text," entered as Dna w qts eval")
+        try:
+            T2 = '"'+Text+'"'
+            Dna = eval(T2)
+        except:
+            print("adding quotes and eval failed on ",T2)
+            try:
+                print("omitting eval entirely and simply assigning ", Text, " to DNA")
+                Dna = Text
+            except:
+                print("nothing working crash coming")
     k = int(args.input1)
+    t = len(Dna)
+
     print(GreedyMotifSearch(Dna, k, t))
     return GreedyMotifSearch(Dna, k, t)
-    
-#   
-# ActualCode from here on https://stepik.org/lesson/23066/step/5?unit=6799
-#
-
 
 def validSequence(s1):
-    valid = 'ACTGU'
-    for letter in s1:
-        if letter not in valid:
-            return False
-    return True
+    valid = '[]'
+    for letter in str(s1):
+        if letter in valid:
+            return True
+    return False
 
 def validFileName(s1):
-    valid = '/.'
-    for letter in s1:
+    valid = 'C:/.'
+    for letter in str(s1):
         if letter in valid:
             return True
     return False
@@ -94,8 +113,6 @@ def Count(Motifs):
             symbol = Motifs[i][j]
             count[symbol][j] += 1
     return count
-
-
 
 def Profile(Motifs):
     count = {} # initializing the count dictionary
@@ -160,7 +177,6 @@ def ProfileMostProbablePattern(Text, k, Profile):
     ind = keys[0]
     return Text[ind: ind +k]
 
-
 def GreedyMotifSearch(Dna, k, t):
     BestMotifs = []
     for i in range(0, t):
@@ -174,7 +190,9 @@ def GreedyMotifSearch(Dna, k, t):
             Motifs.append(ProfileMostProbablePattern(Dna[j], k, P))
         if Score(Motifs) < Score(BestMotifs):
             BestMotifs = Motifs
-    return BestMotifs
+            
+    formatedoutput = str(BestMotifs)+"\n"+str(Score(BestMotifs))
+    return formatedoutput
 
 if __name__ == '__main__':
     main() 

@@ -38,14 +38,21 @@ def main():
                  Text = str(args.input2)
                  Flag_1 = True
              if any(i in valid_File for i in str(args.input2)) == True:
-                 filename = str(args.input2)
+                 filename = str(args.input2[0])
                  file = open(filename, "r")
                  Text = file.read()
                  Flag_1 = True
                     
-                Dna = str(Text)   
-                k = int(args.input1)
-                t = int(args.input0)
+    # Clean it up if its alredy in data dictionary format
+    Text = Text.replace("{[","[")
+    Text = Text.replace("]}","]")
+    Text = Text.replace("[\"[\'","[\'")
+    Text = Text.replace("\']\"]","\']")
+    Text = Text.replace("\',\",","\',")
+    Text = Text.replace("\"\'","\'")
+    Dna = str(Text)
+    k = int(args.input1)
+    t = int(args.input0)
                 
     print(GreedyMotifSearch(Dna, k, t))
     return GreedyMotifSearch(Dna, k, t)
@@ -145,9 +152,6 @@ def GreedyMotifSearch(Dna, k, t):
         if Score(Motifs) < Score(BestMotifs):
             BestMotifs = Motifs
     return BestMotifs
-
-if __name__ == '__main__':
-    main()
 
 if __name__ == '__main__':
     main() 

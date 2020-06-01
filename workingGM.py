@@ -1,69 +1,9 @@
-import sys, argparse
-from gooey import Gooey, GooeyParser
-
-CL_Flag = False  
-init_length = len(sys.argv)
-if init_length >= 2:
-    if not '--ignore-gooey' in sys.argv:
-        sys.argv.append('--ignore-gooey')
-        CL_Flag = True
-else:
-    CL_Flag = False 
-
-@Gooey(program_name="GreedyMotifSearch(Dna, k, t)", program_description='GreedyMotifSearch(Dna, k, t)')
 def main():
-
-    if CL_Flag == False:
-        parser = GooeyParser(conflict_handler='resolve', description="Enter DNA or select or type a filename")       
-        parser.add_argument('input0', type=int, nargs='?', help='t') 
-        parser.add_argument('input1', type=int, nargs='?', help='K') 
-        parser.add_argument('input2', type=str, nargs='*', help='DNA without \' \" or , (s) or FileName of a properly formatted data dictionary' , widget="FileChooser")       
-        
-        
-    if CL_Flag == True:
-        parser = argparse.ArgumentParser(conflict_handler='resolve')       
-        parser.add_argument('input0', type=int, nargs='?', help="t" ) 
-        parser.add_argument('input1', type=int, nargs='?', help='K')        
-        parser.add_argument('input2', type=str, nargs='*', help="DNA file or raw" )
-   
-    args = parser.parse_args()
-    print("Debug:",args.input0," ",args.input1," ",args.input2)
-#    valid_File = '/.tx'
-    Flag_1 = False
-    while Flag_1 == False:
-        if args.input2 != None: 
-             s1 = args.input2
-             if validSequence(s1) == True:
-                 Text = str(args.input2[0])
-                 Flag_1 = True
-             if validFileName(args.input2[0]) == True:
-                 filename = str(args.input2[0])                 
-                 file = open(filename, "r")
-                 Text = file.read()
-                 Flag_1 = True
-             else:
-                 print("input error")
-                 Text = "input error"
-                 Flag_1 = True
-                 
-    # Clean it up if its alredy in data dictionary format
-    Text = Text.replace("{[","[")
-    Text = Text.replace("]}","]")
-    Text = Text.replace("[\"[\'","[\'")
-    Text = Text.replace("\']\"]","\']")
-    Text = Text.replace("\',\",","\',")
-    Text = Text.replace("\"\'","\'")
-    print(Text)
+    k = 3
+    t = 5
     Dna = ['GGCGTTCAGGCA', 'AAGAATCAGTCA', 'CAAGGAGTTCGC', 'CACGTCAATCAC', 'CAATAATATTCG']
-    print(Dna)
-    t = int(args.input0)
-    k = int(args.input1)
     print(GreedyMotifSearch(Dna, k, t))
     return GreedyMotifSearch(Dna, k, t)
-    
-#   
-# ActualCode from here on https://stepik.org/lesson/23066/step/5?unit=6799
-#
 
 
 def validSequence(s1):
@@ -72,13 +12,6 @@ def validSequence(s1):
         if letter not in valid:
             return False
     return True
-
-def validFileName(s1):
-    valid = '/.'
-    for letter in s1:
-        if letter in valid:
-            return True
-    return False
 
 def Count(Motifs):
     count = {} # initializing the count dictionary
